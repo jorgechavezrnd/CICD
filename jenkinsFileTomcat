@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+    tools {
+        maven "MVN_399"
+    }
+    stages {
+        stage('Version Control') {
+            steps {
+                git branch: 'main', url: 'https://github.com/jorgechavezrnd/CICD.git'
+            }
+        }
+        stage('Build'){
+            steps{
+                sh 'mvn clean compile'
+            }
+        }
+        stage('Package'){
+            steps{
+                sh 'mvn package'
+            }
+        }
+        stage('Deploy to Tomcat'){
+            steps{
+                deploy adapters: [tomcat8(alternativeDeploymentContext: '', credentialsId: '94024000-bcde-4457-a421-1dc17469b47e', path: '', url: 'http://192.168.26.4:8081')], contextPath: 'JsfDemoAppFromJenkins', war: 'target/*.war'
+            }
+        }
+    }
+}
